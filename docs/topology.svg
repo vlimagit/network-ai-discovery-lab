@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1000 470" width="1000" height="470">
+  <style>
+    .device { stroke-width: 2; rx: 12; }
+    .linux { fill: #eaf2ff; stroke: #2563eb; }
+    .cisco { fill: #fff1df; stroke: #d97706; }
+    .nokia { fill: #e4f8ed; stroke: #059669; }
+    .name { font: bold 19px Arial, sans-serif; fill: #172033; }
+    .info { font: 14px Arial, sans-serif; fill: #334155; }
+    .link { stroke: #64748b; stroke-width: 3; fill: none; }
+    .port { font: 13px Arial, sans-serif; fill: #334155; }
+  </style>
+
+  <!-- Data-plane links -->
+  <path class="link" d="M290 95 H710"/>
+  <path class="link" d="M810 145 V325"/>
+  <path class="link" d="M710 375 H290"/>
+  <path class="link" d="M190 325 V145"/>
+  <path class="link" d="M290 120 L435 210"/>
+  <path class="link" d="M710 120 L565 210"/>
+
+  <!-- Interface labels -->
+  <text class="port" x="310" y="84">eth1</text>
+  <text class="port" x="660" y="84">eth1</text>
+
+  <text class="port" x="825" y="164">eth2</text>
+  <text class="port" x="825" y="313">eth1</text>
+
+  <text class="port" x="310" y="365">Ethernet0/1</text>
+  <text class="port" x="660" y="365">eth2</text>
+
+  <text class="port" x="135" y="164">eth2</text>
+  <text class="port" x="105" y="313">Ethernet0/2</text>
+
+  <text class="port" x="310" y="145">eth3</text>
+  <text class="port" x="392" y="204">ethernet-1/1</text>
+
+  <text class="port" x="660" y="145">eth3</text>
+  <text class="port" x="565" y="204">ethernet-1/2</text>
+
+  <!-- Devices -->
+  <rect class="device linux" x="90" y="45" width="200" height="100"/>
+  <text class="name" x="190" y="76" text-anchor="middle">Linux R1</text>
+  <text class="info" x="190" y="100" text-anchor="middle">Linux / FRRouting</text>
+  <text class="info" x="190" y="122" text-anchor="middle">172.30.211.240</text>
+
+  <rect class="device linux" x="710" y="45" width="200" height="100"/>
+  <text class="name" x="810" y="76" text-anchor="middle">Linux R2</text>
+  <text class="info" x="810" y="100" text-anchor="middle">Linux / FRRouting</text>
+  <text class="info" x="810" y="122" text-anchor="middle">172.30.211.241</text>
+
+  <rect class="device cisco" x="90" y="325" width="200" height="100"/>
+  <text class="name" x="190" y="356" text-anchor="middle">Cisco R4</text>
+  <text class="info" x="190" y="380" text-anchor="middle">Cisco / IOS XE</text>
+  <text class="info" x="190" y="402" text-anchor="middle">172.30.211.243</text>
+
+  <rect class="device linux" x="710" y="325" width="200" height="100"/>
+  <text class="name" x="810" y="356" text-anchor="middle">Linux R3</text>
+  <text class="info" x="810" y="380" text-anchor="middle">Linux / FRRouting</text>
+  <text class="info" x="810" y="402" text-anchor="middle">172.30.211.242</text>
+
+  <rect class="device nokia" x="400" y="210" width="200" height="100"/>
+  <text class="name" x="500" y="241" text-anchor="middle">Nokia R5</text>
+  <text class="info" x="500" y="265" text-anchor="middle">Nokia / SR Linux</text>
+  <text class="info" x="500" y="287" text-anchor="middle">172.30.211.244</text>
+</svg>
