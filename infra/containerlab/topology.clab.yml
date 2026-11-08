@@ -30,8 +30,15 @@ topology:
       image: vrnetlab/cisco_iol:17.18.02
       mgmt-ipv4: 172.30.211.243
       startup-config: cisco/r4.partial.cfg
+    nokia-r5:
+      kind: nokia_srlinux
+      image: ghcr.io/nokia/srlinux@sha256:0096fe3ebcafabb7253492e2060425fe027a168e0e066766d1e85efbb0b48be8
+      type: ixrd2
+      mgmt-ipv4: 172.30.211.244
   links:
     - endpoints: ["linux-r1:eth1", "linux-r2:eth1"]
     - endpoints: ["linux-r2:eth2", "linux-r3:eth1"]
     - endpoints: ["linux-r3:eth2", "cisco-r4:Ethernet0/1"]
     - endpoints: ["cisco-r4:Ethernet0/2", "linux-r1:eth2"]
+    - endpoints: ["linux-r1:eth3", "nokia-r5:e1-1"]
+    - endpoints: ["linux-r2:eth3", "nokia-r5:e1-2"]

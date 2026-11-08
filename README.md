@@ -171,3 +171,177 @@ Stop NetBox while preserving persistent volumes:
 ## Security
 
 Never commit `.env`, SSH private keys, Cisco images, licenses or local runtime artifacts.
+
+---
+
+## Five-router topology
+
+The lab contains three Linux/FRRouting routers, one Cisco IOS XE router,
+and one Nokia SR Linux router.
+
+```mermaid
+flowchart TB
+    R1["Linux R1<br/>FRRouting<br/>172.30.211.240"]
+    R2["Linux R2<br/>FRRouting<br/>172.30.211.241"]
+    R3["Linux R3<br/>FRRouting<br/>172.30.211.242"]
+    R4["Cisco R4<br/>IOS XE 17.18.02<br/>172.30.211.243"]
+    R5["Nokia R5<br/>SR Linux 26.7.2<br/>172.30.211.244"]
+
+    R1 ---|"eth1 ↔ eth1"| R2
+    R2 ---|"eth2 ↔ eth1"| R3
+    R3 ---|"eth2 ↔ Ethernet0/1"| R4
+    R4 ---|"Ethernet0/2 ↔ eth2"| R1
+    R1 ---|"eth3 ↔ ethernet-1/1"| R5
+    R2 ---|"eth3 ↔ ethernet-1/2"| R5
+```
+
+All management IP addresses belong to `172.30.211.0/24`.
+Data-plane links do not have these management IP addresses.
+
+## Device CLI access
+
+### Linux R1, R2 and R3
+
+```bash
+sudo docker exec -it clab-network-ai-discovery-linux-r1 bash
+sudo docker exec -it clab-network-ai-discovery-linux-r2 bash
+sudo docker exec -it clab-network-ai-discovery-linux-r3 bash
+```
+
+Inside a Linux container, enter the FRRouting CLI:
+
+```bash
+vtysh
+```
+
+### Cisco R4
+
+Connect through SSH:
+
+```bash
+ssh -o StrictHostKeyChecking=accept-new admin@172.30.211.243
+```
+
+Use the username and password configured for Cisco in `.env`.
+
+### Nokia R5
+
+```bash
+sudo docker exec -it clab-network-ai-discovery-nokia-r5 sr_cli
+```
+
+## Containerlab commands
+
+Inspect the topology:
+
+```bash
+sudo containerlab inspect -t infra/containerlab/topology.clab.yml
+```
+
+List containers:
+
+```bash
+sudo docker ps --filter name=clab-network-ai-discovery
+```
+
+Check container logs:
+
+```bash
+sudo docker logs clab-network-ai-discovery-cisco-r4
+sudo docker logs clab-network-ai-discovery-nokia-r5
+```
+
+Validate the eight Linux LLDP adjacencies:
+
+```bash
+./scripts/lab-check.sh
+```
+
+Stop and start the lab:
+
+```bash
+./scripts/lab-stop.sh
+./scripts/lab-start.sh
+```
+
+## Device troubleshooting commands
+
+### Linux / FRRouting
+
+Run inside the relevant Linux container:
+
+```bash
+ip -br link
+ip -br addr
+ip route
+lldpcli show neighbors
+lldpcli show interfaces
+lldpcli show configuration
+vtysh -c "show version"
+vtysh -c "show interface"
+vtysh -c "show ip route"
+```
+
+Capture LLDP traffic on R1 or R2 toward Nokia:
+
+```bash
+tcpdump -ni eth3 ether proto 0x88cc
+```
+
+### Cisco IOS XE
+
+Run inside the Cisco CLI:
+
+```text
+show version
+show ip interface brief
+show interfaces description
+show interfaces Ethernet0/1
+show interfaces Ethernet0/2
+show lldp neighbors
+show lldp neighbors detail
+show cdp neighbors
+show running-config
+show logging
+```
+
+Expected data-plane connections:
+
+- Ethernet0/1: Linux R3
+- Ethernet0/2: Linux R1
+
+### Nokia SR Linux
+
+Run inside the Nokia CLI:
+
+```text
+show version
+show interface
+show interface ethernet-1/1
+show interface ethernet-1/2
+show system lldp neighbor
+info from state system lldp
+info system lldp
+show network-instance
+```
+
+Expected LLDP neighbors:
+
+- ethernet-1/1: linux-r1
+- ethernet-1/2: linux-r2
+
+An additional neighbor on `mgmt0` may appear because the management
+interfaces share a Docker bridge. It is not a data-plane connection.
+
+## Image requirements
+
+The Linux router image is built locally from the repository Dockerfile.
+
+The Nokia SR Linux image is downloaded from Nokia's public container
+registry and pinned by digest in the Containerlab topology.
+
+The Cisco IOS XE image cannot be distributed in this repository.
+Users must provide a legally obtained compatible Cisco IOL archive
+and build `vrnetlab/cisco_iol:17.18.02` using the Cisco build workflow.
+
+Never commit proprietary images, `.env`, private SSH keys or credentials.

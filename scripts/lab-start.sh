@@ -9,6 +9,7 @@ KEY_DIR="$ROOT/.lab/ssh"
 LAB_NAME="network-ai-discovery"
 CISCO_IMAGE="vrnetlab/cisco_iol:17.18.02"
 CISCO_CONTAINER="clab-${LAB_NAME}-cisco-r4"
+NOKIA_IMAGE="ghcr.io/nokia/srlinux@sha256:0096fe3ebcafabb7253492e2060425fe027a168e0e066766d1e85efbb0b48be8"
 
 log() {
   printf '[lab-start] %s\n' "$*"
@@ -27,6 +28,11 @@ sudo docker info >/dev/null 2>&1 || die "Docker daemon unavailable."
 
 if ! sudo docker image inspect "$CISCO_IMAGE" >/dev/null 2>&1; then
   die "Cisco image missing: $CISCO_IMAGE. Build it before starting the lab."
+fi
+
+if ! sudo docker image inspect "$NOKIA_IMAGE" >/dev/null 2>&1; then
+  log "Pulling Nokia SR Linux image..."
+  sudo docker pull "$NOKIA_IMAGE"
 fi
 
 if sudo docker ps -a \
@@ -52,7 +58,7 @@ sudo docker build \
   -t network-ai-discovery/linux-router:0.1 \
   "$ROOT/infra/containerlab/linux-router"
 
-log "Deploying four-router topology..."
+log "Deploying five-router topology..."
 sudo containerlab deploy -t "$TOPOLOGY"
 
 log "Waiting for Cisco container..."

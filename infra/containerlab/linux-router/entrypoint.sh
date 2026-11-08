@@ -10,7 +10,7 @@ ssh-keygen -A >/dev/null
 
 # Use the hostname as LLDP system name and advertise data interfaces.
 mkdir -p /run/lldpd
-lldpd -I 'eth1,eth2'
+lldpd -I 'eth1,eth2,eth3'
 /usr/lib/frr/frrinit.sh start
 /usr/sbin/sshd
 
