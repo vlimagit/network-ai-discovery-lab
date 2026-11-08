@@ -1,0 +1,81 @@
+name: network-ai-discovery
+
+x-netbox-env: &netbox-env
+  DB_HOST: postgres
+  DB_NAME: netbox
+  DB_USER: netbox
+  DB_PASSWORD: ${NETBOX_DB_PASSWORD:?Set NETBOX_DB_PASSWORD in .env}
+  REDIS_HOST: redis
+  REDIS_PASSWORD: ${NETBOX_REDIS_PASSWORD:?Set NETBOX_REDIS_PASSWORD in .env}
+  NETBOX_SECRET_KEY: ${NETBOX_SECRET_KEY:?Set NETBOX_SECRET_KEY in .env}
+  SUPERUSER_NAME: ${NETBOX_ADMIN_USER:-admin}
+  SUPERUSER_EMAIL: ${NETBOX_ADMIN_EMAIL:-admin@example.invalid}
+  SUPERUSER_PASSWORD: ${NETBOX_ADMIN_PASSWORD:?Set NETBOX_ADMIN_PASSWORD in .env}
+
+x-netbox-base: &netbox-base
+  image: ${NETBOX_IMAGE:-netboxcommunity/netbox:latest}
+  restart: unless-stopped
+  environment: *netbox-env
+  volumes:
+    - ./configuration.py:/etc/netbox/config/configuration.py:ro
+    - netbox-media:/opt/netbox/netbox/media
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: ${NETBOX_DB_PASSWORD:?Set NETBOX_DB_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netbox -d netbox"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${NETBOX_REDIS_PASSWORD:?Set NETBOX_REDIS_PASSWORD in .env}
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\""]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  netbox:
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/login/', timeout=5)\""
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+    <<: *netbox-base
+    ports:
+      - "${NETBOX_BIND_ADDRESS:-127.0.0.1}:${NETBOX_PORT:-8000}:8080"
+
+  netbox-worker:
+    depends_on:
+      netbox:
+        condition: service_healthy
+    <<: *netbox-base
+    command: ["/opt/netbox/venv/bin/python", "/opt/netbox/netbox/manage.py", "rqworker"]
+
+volumes:
+  postgres-data:
+  redis-data:
+  netbox-media:
