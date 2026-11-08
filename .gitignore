@@ -1,27 +1,34 @@
-# Secrets
+# Secrets and local configuration
 .env
 .env.*
 !.env.example
-*.pem
 *.key
+*.pem
+id_rsa*
+id_ed25519*
 
 # Python
+.venv/
 __pycache__/
 *.py[cod]
-.venv/
+.pytest_cache/
 
-# Virtual network images
+# Virtual router images and lab artifacts
 *.qcow2
 *.iso
 *.vmdk
 *.vdi
 *.img
+*.tar
+*.tar.gz
+.clab/
+clab-*/
 
-# Runtime data
+# Logs and runtime files
 logs/
 runs/
 backups/
 
-# Editor
-.vscode/
+# IDE
 .idea/
+.vscode/
