@@ -6,24 +6,24 @@ The goal is to progressively implement SSH/LLDP discovery, NetBox topology synch
 
 ## Architecture
 
-Four routers connected in a ring:
+Five routers: three Linux/FRRouting, one Cisco IOS XE and one Nokia SR Linux.
 
-```text
-Linux R1 -------- Linux R2
-   |                  |
-   |                  |
-Cisco R4 -------- Linux R3
-```
+![Network topology](docs/topology.svg)
+
+All management IP addresses belong to `172.30.211.0/24`.
+Data-plane links do not use these management IP addresses.
 
 | Device | Platform | Management IP |
 |---|---|---|
 | linux-r1 | Ubuntu / FRR / LLDP | 172.30.211.240 |
 | linux-r2 | Ubuntu / FRR / LLDP | 172.30.211.241 |
 | linux-r3 | Ubuntu / FRR / LLDP | 172.30.211.242 |
-| cisco-r4 | Cisco IOL IOS-XE 17.18.02 | 172.30.211.243 |
+| cisco-r4 | Cisco IOL IOS XE 17.18.02 | 172.30.211.243 |
 | nokia-r5 | Nokia SR Linux 26.7.2 | 172.30.211.244 |
 
-Linux routers provide SSH and LLDP. Cisco R4 provides SSH and LLDP. Nokia R5 provides SR Linux CLI and LLDP.
+Linux routers provide SSH, FRRouting and LLDP.
+Cisco R4 provides SSH and LLDP.
+Nokia R5 provides SR Linux CLI and LLDP.
 
 ## Requirements
 
@@ -157,7 +157,7 @@ Stop NetBox while preserving persistent volumes:
 - [x] NetBox and Containerlab
 - [x] Linux routers with SSH and LLDP
 - [x] Cisco IOL integration and automatic configuration
-- [x] Four-router ring topology
+- [x] Five-router multi-vendor topology
 - [x] Automated Linux-side LLDP verification
 - [ ] Python network discovery
 - [ ] NetBox topology synchronization
@@ -168,16 +168,6 @@ Stop NetBox while preserving persistent volumes:
 Never commit `.env`, SSH private keys, Cisco images, licenses or local runtime artifacts.
 
 ---
-
-## Five-router topology
-
-The lab contains three Linux/FRRouting routers, one Cisco IOS XE router,
-and one Nokia SR Linux router.
-
-![Network topology](docs/topology.svg)
-
-All management IP addresses belong to `172.30.211.0/24`.
-Data-plane links do not have these management IP addresses.
 
 ## Device CLI access
 
