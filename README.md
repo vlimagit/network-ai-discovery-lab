@@ -21,8 +21,9 @@ Cisco R4 -------- Linux R3
 | linux-r2 | Ubuntu / FRR / LLDP | 172.30.211.241 |
 | linux-r3 | Ubuntu / FRR / LLDP | 172.30.211.242 |
 | cisco-r4 | Cisco IOL IOS-XE 17.18.02 | 172.30.211.243 |
+| nokia-r5 | Nokia SR Linux 26.7.2 | 172.30.211.244 |
 
-Linux routers provide SSH and LLDP. Cisco R4 provides SSH, LLDP and a Telnet console.
+Linux routers provide SSH and LLDP. Cisco R4 provides SSH and LLDP. Nokia R5 provides SR Linux CLI and LLDP.
 
 ## Requirements
 
@@ -85,7 +86,7 @@ Deploy the network:
 ./scripts/lab-start.sh
 ```
 
-The startup script builds the Linux router image, deploys four routers and configures Cisco R4 through SSH using Netmiko.
+The startup script builds the Linux router image, deploys five routers and configures Cisco R4 through SSH using Netmiko.
 
 Verify the lab:
 
@@ -107,12 +108,6 @@ Inspect Linux LLDP neighbors:
 sudo docker exec clab-network-ai-discovery-linux-r1 lldpcli show neighbors
 sudo docker exec clab-network-ai-discovery-linux-r2 lldpcli show neighbors
 sudo docker exec clab-network-ai-discovery-linux-r3 lldpcli show neighbors
-```
-
-Connect to the Cisco console:
-
-```bash
-telnet 172.30.211.243 5000
 ```
 
 Cisco diagnostic commands:
@@ -179,31 +174,7 @@ Never commit `.env`, SSH private keys, Cisco images, licenses or local runtime a
 The lab contains three Linux/FRRouting routers, one Cisco IOS XE router,
 and one Nokia SR Linux router.
 
-```mermaid
-flowchart TB
-    subgraph TOP[" "]
-        direction LR
-        R1["Linux R1<br/>FRRouting<br/>172.30.211.240"]
-        R2["Linux R2<br/>FRRouting<br/>172.30.211.241"]
-    end
-
-    subgraph MIDDLE[" "]
-        direction LR
-        R4["Cisco R4<br/>IOS XE<br/>172.30.211.243"]
-        R5["Nokia R5<br/>SR Linux<br/>172.30.211.244"]
-        R3["Linux R3<br/>FRRouting<br/>172.30.211.242"]
-    end
-
-    R1 ---|"eth1 ↔ eth1"| R2
-    R2 ---|"eth2 ↔ eth1"| R3
-    R3 ---|"eth2 ↔ Ethernet0/1"| R4
-    R4 ---|"Ethernet0/2 ↔ eth2"| R1
-    R1 ---|"eth3 ↔ ethernet-1/1"| R5
-    R2 ---|"eth3 ↔ ethernet-1/2"| R5
-
-    style TOP fill:none,stroke:none
-    style MIDDLE fill:none,stroke:none
-```
+![Network topology](docs/topology.svg)
 
 All management IP addresses belong to `172.30.211.0/24`.
 Data-plane links do not have these management IP addresses.
@@ -240,13 +211,6 @@ ssh -o StrictHostKeyChecking=accept-new \
 When prompted, enter the password from `CISCO_PASSWORD` in `.env`.
 
 The password is not included in the command or committed to Git.
-
-For emergency console access when SSH is unavailable:
-
-```bash
-sudo docker exec -it clab-network-ai-discovery-cisco-r4 \
-  telnet localhost 5000
-```
 
 ### Nokia R5
 
