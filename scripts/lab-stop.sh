@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-sudo containerlab destroy -t "$ROOT/infra/containerlab/topology.clab.yml" --cleanup
+TOPOLOGY="$ROOT/infra/containerlab/topology.clab.yml"
+
+echo "[lab-stop] Stopping Network AI Discovery Lab..."
+
+sudo containerlab destroy \
+  -t "$TOPOLOGY" \
+  --cleanup
+
+echo "[lab-stop] Lab stopped. NetBox and its data are preserved."

@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     frr lldpd openssh-server iproute2 iputils-ping tcpdump ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd -m -s /bin/bash lab \
+    && useradd -m -s /bin/bash -G adm lab \
     && mkdir -p /run/sshd /home/lab/.ssh \
     && chown -R lab:lab /home/lab/.ssh \
     && chmod 700 /home/lab/.ssh \

@@ -81,4 +81,7 @@ else
   warn '/dev/kvm not available: QEMU-based router images may be unusable or very slow.'
 fi
 
+log 'Installing Python dependencies...'
+"$ROOT_DIR/.venv/bin/python" -m pip install -r "$ROOT_DIR/requirements.txt"
+
 log 'Bootstrap prerequisites ready. No lab services have been started.'

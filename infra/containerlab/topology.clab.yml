@@ -25,6 +25,13 @@ topology:
       mgmt-ipv4: 172.30.211.242
       binds:
         - ../../.lab/ssh/id_ed25519.pub:/run/lab-ssh/authorized_key.pub:ro
+    cisco-r4:
+      kind: cisco_iol
+      image: vrnetlab/cisco_iol:17.18.02
+      mgmt-ipv4: 172.30.211.243
+      startup-config: cisco/r4.partial.cfg
   links:
     - endpoints: ["linux-r1:eth1", "linux-r2:eth1"]
     - endpoints: ["linux-r2:eth2", "linux-r3:eth1"]
+    - endpoints: ["linux-r3:eth2", "cisco-r4:Ethernet0/1"]
+    - endpoints: ["cisco-r4:Ethernet0/2", "linux-r1:eth2"]

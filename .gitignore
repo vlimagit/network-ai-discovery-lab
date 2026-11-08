@@ -34,3 +34,12 @@ backups/
 .vscode/
 
 .lab/
+
+# Local vendor images and licenses
+.images/
+*.qcow2
+*.vmdk
+*.vdi
+*.iso
+*.iourc
+*.iol
