@@ -181,11 +181,18 @@ and one Nokia SR Linux router.
 
 ```mermaid
 flowchart TB
-    R1["Linux R1<br/>FRRouting<br/>172.30.211.240"]
-    R2["Linux R2<br/>FRRouting<br/>172.30.211.241"]
-    R3["Linux R3<br/>FRRouting<br/>172.30.211.242"]
-    R4["Cisco R4<br/>IOS XE 17.18.02<br/>172.30.211.243"]
-    R5["Nokia R5<br/>SR Linux 26.7.2<br/>172.30.211.244"]
+    subgraph TOP[" "]
+        direction LR
+        R1["Linux R1<br/>FRRouting<br/>172.30.211.240"]
+        R2["Linux R2<br/>FRRouting<br/>172.30.211.241"]
+    end
+
+    subgraph MIDDLE[" "]
+        direction LR
+        R4["Cisco R4<br/>IOS XE<br/>172.30.211.243"]
+        R5["Nokia R5<br/>SR Linux<br/>172.30.211.244"]
+        R3["Linux R3<br/>FRRouting<br/>172.30.211.242"]
+    end
 
     R1 ---|"eth1 ↔ eth1"| R2
     R2 ---|"eth2 ↔ eth1"| R3
@@ -193,6 +200,9 @@ flowchart TB
     R4 ---|"Ethernet0/2 ↔ eth2"| R1
     R1 ---|"eth3 ↔ ethernet-1/1"| R5
     R2 ---|"eth3 ↔ ethernet-1/2"| R5
+
+    style TOP fill:none,stroke:none
+    style MIDDLE fill:none,stroke:none
 ```
 
 All management IP addresses belong to `172.30.211.0/24`.
@@ -216,13 +226,27 @@ vtysh
 
 ### Cisco R4
 
-Connect through SSH:
+Connect to Cisco IOS XE using SSH and the credentials stored in `.env`.
 
 ```bash
-ssh -o StrictHostKeyChecking=accept-new admin@172.30.211.243
+set -a
+source .env
+set +a
+
+ssh -o StrictHostKeyChecking=accept-new \
+  "${CISCO_USERNAME}@172.30.211.243"
 ```
 
-Use the username and password configured for Cisco in `.env`.
+When prompted, enter the password from `CISCO_PASSWORD` in `.env`.
+
+The password is not included in the command or committed to Git.
+
+For emergency console access when SSH is unavailable:
+
+```bash
+sudo docker exec -it clab-network-ai-discovery-cisco-r4 \
+  telnet localhost 5000
+```
 
 ### Nokia R5
 
