@@ -1,0 +1,30 @@
+name: network-ai-discovery
+
+mgmt:
+  network: network-ai-discovery-mgmt
+  ipv4-subnet: 172.30.211.0/24
+
+# Containerlab uses the image built by scripts/lab-start.sh.
+topology:
+  kinds:
+    linux:
+      image: network-ai-discovery/linux-router:0.1
+  nodes:
+    linux-r1:
+      kind: linux
+      mgmt-ipv4: 172.30.211.240
+      binds:
+        - ../../.lab/ssh/id_ed25519.pub:/run/lab-ssh/authorized_key.pub:ro
+    linux-r2:
+      kind: linux
+      mgmt-ipv4: 172.30.211.241
+      binds:
+        - ../../.lab/ssh/id_ed25519.pub:/run/lab-ssh/authorized_key.pub:ro
+    linux-r3:
+      kind: linux
+      mgmt-ipv4: 172.30.211.242
+      binds:
+        - ../../.lab/ssh/id_ed25519.pub:/run/lab-ssh/authorized_key.pub:ro
+  links:
+    - endpoints: ["linux-r1:eth1", "linux-r2:eth1"]
+    - endpoints: ["linux-r2:eth2", "linux-r3:eth1"]
