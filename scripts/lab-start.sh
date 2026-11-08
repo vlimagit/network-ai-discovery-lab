@@ -37,4 +37,4 @@ chmod 600 "$KEY_DIR/id_ed25519"
 
 docker build -t network-ai-discovery/linux-router:0.1 "$ROOT/infra/containerlab/linux-router"
 sudo containerlab deploy -t "$TOPOLOGY" --reconfigure
-printf '\nLab deployed. Test LLDP and SSH using commands in README-STEP-0C.md.\n'
+printf '\nLab deployed. Test LLDP and SSH using commands in README.md.\n'

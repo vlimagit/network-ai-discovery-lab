@@ -37,6 +37,22 @@ NetBox: http://localhost:8000
 
 All three devices support SSH and LLDP.
 
+## Verify the Lab
+
+Check the Containerlab topology:
+
+    sudo containerlab inspect -t infra/containerlab/topology.clab.yml
+
+Check LLDP neighbors on R2:
+
+    docker exec clab-network-ai-discovery-linux-r2 lldpcli show neighbors
+
+Test SSH connectivity to R1:
+
+    ssh -i .lab/ssh/id_ed25519 lab@172.30.211.240 hostname
+
+Expected topology: **R1 -- R2 -- R3**.
+
 ## Stop
 
     ./scripts/lab-stop.sh
