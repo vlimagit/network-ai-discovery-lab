@@ -108,9 +108,10 @@ Open the file as Administrator from PowerShell:
 
     Start-Process notepad.exe -Verb RunAs -ArgumentList "$env:SystemRoot\System32\drivers\etc\hosts"
 
-NetBox:
+NetBox access:
 
-[http://127.0.0.1:8000](http://127.0.0.1:8000)
+- Direct access: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- Using hostname: [http://netbox.lab.test:8000](http://netbox.lab.test:8000)
 
 ### Ubuntu / WSL2 – Network Devices
 
